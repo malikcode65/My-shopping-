@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
@@ -30,6 +31,7 @@ import com.jarvis.agent.ui.theme.JarvisTheme
 
 enum class Screen(val label: String, val icon: ImageVector) {
     HOME("Home", Icons.Filled.Home),
+    LOG("Log", Icons.Filled.History),
     SETUP("Permissions", Icons.Filled.Security),
     SETTINGS("Settings", Icons.Filled.Settings),
 }
@@ -76,6 +78,7 @@ class MainActivity : FragmentActivity() {
 private fun ScreenContent(screen: Screen, navigate: (Screen) -> Unit) {
     when (screen) {
         Screen.HOME -> HomeScreen()
+        Screen.LOG -> ActionLogScreen()
         Screen.SETUP -> PermissionSetupScreen(onFinished = { navigate(Screen.HOME) })
         Screen.SETTINGS -> SettingsScreen()
     }

@@ -1,6 +1,17 @@
 package com.jarvis.agent.core
 
 import android.content.Context
+import com.jarvis.agent.brain.AgentLoop
+import com.jarvis.agent.brain.ClaudeClient
+import com.jarvis.agent.brain.MemoryProvider
+import com.jarvis.agent.brain.NoMemory
+import com.jarvis.agent.brain.RateLimiter
+import com.jarvis.agent.log.ActionLogDatabase
+import com.jarvis.agent.log.ActionLogger
+import com.jarvis.agent.safety.AndroidConfirmer
+import com.jarvis.agent.safety.ConfirmationBroker
+import com.jarvis.agent.tools.ToolCatalog
+import com.jarvis.agent.tools.ToolRegistry
 import com.jarvis.agent.voice.AndroidSpeechInput
 import com.jarvis.agent.voice.AndroidTts
 import com.jarvis.agent.voice.ElevenLabsTts
@@ -29,19 +40,34 @@ class AppGraph(val context: Context) {
         )
     }
 
-    /** Milestone 1: echo back what was heard. Replaced by the Claude agent in milestone 2. */
+    val actionLog: ActionLogger by lazy { ActionLogger(ActionLogDatabase.create(context).dao(), appScope) }
+    val claude: ClaudeClient by lazy { ClaudeClient(http, prefs, secure) }
+    val tools: ToolRegistry by lazy { ToolCatalog.build() }
+    val confirmer by lazy { AndroidConfirmer(context, voice) }
+
+    /** Long-term memory; replaced by the Room-backed implementation when available. */
+    @Volatile var memory: MemoryProvider = NoMemory
+
     val commandHandler: CommandHandler by lazy {
-        CommandHandler { text, _ ->
-            val reply = "Main ne suna: $text"
-            voice.speak(reply)
-            reply
-        }
+        AgentLoop(
+            graph = this,
+            claude = claude,
+            registry = tools,
+            confirmer = confirmer,
+            log = actionLog,
+            voice = voice,
+            memory = { memory },
+            rateLimiter = RateLimiter(maxPerWindow = { prefs.maxRequestsPerMinute }),
+        )
     }
 
     init {
-        KillSwitch.addListener {
+        KillSwitch.addListener { reason ->
             tasks.cancelAll()
+            ConfirmationBroker.denyAll()
             voice.stopSpeaking()
+            actionLog.log(0L, "KILL", "Kill switch: $reason")
         }
+        actionLog.pruneOlderThanDays(30)
     }
 }

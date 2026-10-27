@@ -18,6 +18,8 @@ import com.jarvis.agent.core.KillSwitch
 import com.jarvis.agent.core.Notifications
 import com.jarvis.agent.core.TaskOrigin
 import com.jarvis.agent.overlay.FloatingBubble
+import com.jarvis.agent.safety.ConfirmationBroker
+import com.jarvis.agent.safety.UserSignals
 import com.jarvis.agent.voice.VoiceIO
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -94,6 +96,10 @@ class JarvisService : LifecycleService() {
 
     /** Wake word, bubble tap, notification button or in-app mic button. Interrupts current speech/task. */
     fun startConversation() {
+        // "Hey Jarvis" / bubble tap while Jarvis waits for the user to finish a hand-over = continue.
+        if (UserSignals.signalContinue()) return
+        // Never cancel a task while a confirmation is on screen; the user answers there.
+        if (ConfirmationBroker.current.value != null) return
         graph.voice.stopSpeaking()
         session?.cancel()
         session = lifecycleScope.launch {

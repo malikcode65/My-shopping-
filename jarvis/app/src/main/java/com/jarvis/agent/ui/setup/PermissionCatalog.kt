@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.app.NotificationManager
 import android.os.Build
+import android.os.Environment
 import android.os.PowerManager
 import android.provider.Settings
 import androidx.core.content.ContextCompat
@@ -73,9 +75,79 @@ object PermissionCatalog {
                     Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:${ctx.packageName}"))
                 },
                 isGranted = { ctx ->
-                    ctx.getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(ctx.packageName)
+                    ctx.getSystemService(PowerManager::class.java)?.isIgnoringBatteryOptimizations(ctx.packageName) == true
                 },
             )
+        )
+        // Milestone 2: tools
+        add(
+            runtimeItem(
+                "contacts", "Contacts", required = false,
+                why = "\"Ammi ko call karo\" jaisi baat samajhne ke liye naam se number dhoondna.",
+                perms = listOf(Manifest.permission.READ_CONTACTS),
+            )
+        )
+        add(
+            runtimeItem(
+                "phone", "Phone calls", required = false,
+                why = "Aap ke kehne par call milane ke liye. Har call se pehle Jarvis aap se tasdeeq karega.",
+                perms = listOf(Manifest.permission.CALL_PHONE),
+            )
+        )
+        add(
+            runtimeItem(
+                "sms", "SMS bhejna aur parhna", required = false,
+                why = "Messages parh kar sunane aur aap ki tasdeeq ke baad SMS bhejne ke liye. OTP kabhi aage nahi bheje jaate.",
+                perms = listOf(Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS),
+            )
+        )
+        add(
+            runtimeItem(
+                "calendar", "Calendar", required = false,
+                why = "Aap ka schedule batane aur naye events banane ke liye.",
+                perms = listOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR),
+            )
+        )
+        add(
+            runtimeItem(
+                "location", "Location", required = false,
+                why = "\"Main kahan hoon?\" ya qareeb ki jagah dhoondne ke liye. Sirf jab aap poochein.",
+                perms = listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+            )
+        )
+        add(
+            PermissionItem(
+                id = "write_settings", title = "System settings badalna", required = false,
+                why = "Screen ki brightness kam/zyada karne ke liye.",
+                settingsIntent = { ctx -> Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:${ctx.packageName}")) },
+                isGranted = { ctx -> Settings.System.canWrite(ctx) },
+            )
+        )
+        add(
+            PermissionItem(
+                id = "dnd", title = "Do Not Disturb control", required = false,
+                why = "\"Phone silent kar do\" ya DND on/off karne ke liye.",
+                settingsIntent = { _ -> Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS) },
+                isGranted = { ctx -> ctx.getSystemService(NotificationManager::class.java)?.isNotificationPolicyAccessGranted == true },
+            )
+        )
+        add(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                PermissionItem(
+                    id = "files", title = "Files (all files access)", required = false,
+                    why = "Downloads/Documents ki files dhoondne, parhne aur (fingerprint ke baad) delete karne ke liye.",
+                    settingsIntent = { ctx ->
+                        Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:${ctx.packageName}"))
+                    },
+                    isGranted = { _ -> Environment.isExternalStorageManager() },
+                )
+            } else {
+                runtimeItem(
+                    "files", "Files", required = false,
+                    why = "Downloads/Documents ki files dhoondne aur parhne ke liye.",
+                    perms = listOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                )
+            }
         )
     }
 }
