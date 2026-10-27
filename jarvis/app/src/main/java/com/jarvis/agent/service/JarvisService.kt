@@ -149,7 +149,7 @@ class JarvisService : LifecycleService() {
 
     @SuppressLint("WakelockTimeout")
     private fun acquireWakeLock() {
-        val pm = getSystemService(PowerManager::class.java)
+        val pm = getSystemService(PowerManager::class.java) ?: return
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "jarvis:always-on").apply {
             setReferenceCounted(false)
             acquire()

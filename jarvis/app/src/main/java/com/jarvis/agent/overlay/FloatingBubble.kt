@@ -20,7 +20,7 @@ class FloatingBubble(
     private val onTap: () -> Unit,
     private val onLongPress: () -> Unit,
 ) {
-    private val wm = context.getSystemService(WindowManager::class.java)
+    private val wm: WindowManager = context.getSystemService(WindowManager::class.java)!!
     private var view: ImageView? = null
 
     private val params = WindowManager.LayoutParams(

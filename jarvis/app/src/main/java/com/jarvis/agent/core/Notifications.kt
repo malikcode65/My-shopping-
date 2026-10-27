@@ -21,7 +21,7 @@ object Notifications {
     const val ID_HANDOFF = 1004
 
     fun createChannels(context: Context) {
-        val nm = context.getSystemService(NotificationManager::class.java)
+        val nm = context.getSystemService(NotificationManager::class.java) ?: return
         nm.createNotificationChannel(
             NotificationChannel(CHANNEL_SERVICE, context.getString(R.string.notif_channel_service), NotificationManager.IMPORTANCE_LOW)
                 .apply { setShowBadge(false) }
@@ -73,6 +73,6 @@ object Notifications {
             .setContentIntent(contentIntent ?: openAppIntent(context))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
-        runCatching { context.getSystemService(NotificationManager::class.java).notify(id, n) }
+        runCatching { context.getSystemService(NotificationManager::class.java)?.notify(id, n) }
     }
 }
