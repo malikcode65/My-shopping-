@@ -19,6 +19,7 @@ object Notifications {
     const val ID_BOOT = 1002
     const val ID_CONFIRM = 1003
     const val ID_HANDOFF = 1004
+    const val ID_ROUTINE_BASE = 2000
 
     fun createChannels(context: Context) {
         val nm = context.getSystemService(NotificationManager::class.java) ?: return

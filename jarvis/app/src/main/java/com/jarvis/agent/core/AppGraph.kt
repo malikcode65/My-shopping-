@@ -8,6 +8,11 @@ import com.jarvis.agent.brain.NoMemory
 import com.jarvis.agent.brain.RateLimiter
 import com.jarvis.agent.log.ActionLogDatabase
 import com.jarvis.agent.log.ActionLogger
+import com.jarvis.agent.memory.MemoryDatabase
+import com.jarvis.agent.memory.MemoryManager
+import com.jarvis.agent.routines.RoutineScheduler
+import com.jarvis.agent.tools.impl.Contacts
+import kotlinx.coroutines.launch
 import com.jarvis.agent.safety.AndroidConfirmer
 import com.jarvis.agent.safety.ConfirmationBroker
 import com.jarvis.agent.tools.ToolCatalog
@@ -45,7 +50,11 @@ class AppGraph(val context: Context) {
     val tools: ToolRegistry by lazy { ToolCatalog.build() }
     val confirmer by lazy { AndroidConfirmer(context, voice) }
 
-    /** Long-term memory; replaced by the Room-backed implementation when available. */
+    val memoryDb: MemoryDatabase by lazy { MemoryDatabase.create(context) }
+    val memoryManager: MemoryManager by lazy { MemoryManager(memoryDb.dao()) }
+    val routineScheduler: RoutineScheduler by lazy { RoutineScheduler(context) { memoryDb.dao() } }
+
+    /** Long-term memory used by the agent loop (Room-backed). */
     @Volatile var memory: MemoryProvider = NoMemory
 
     val commandHandler: CommandHandler by lazy {
@@ -69,5 +78,8 @@ class AppGraph(val context: Context) {
             actionLog.log(0L, "KILL", "Kill switch: $reason")
         }
         actionLog.pruneOlderThanDays(30)
+        memory = memoryManager
+        Contacts.nicknameResolver = { name -> memoryManager.resolveNickname(name) }
+        appScope.launch { runCatching { routineScheduler.rescheduleAll() } }
     }
 }

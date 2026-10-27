@@ -46,6 +46,14 @@ import com.jarvis.agent.tools.impl.RecentPhotosTool
 import com.jarvis.agent.tools.impl.ReplyNotificationTool
 import com.jarvis.agent.tools.impl.ScreenshotTool
 import com.jarvis.agent.tools.impl.ViewPhotoTool
+import com.jarvis.agent.tools.impl.CreateRoutineTool
+import com.jarvis.agent.tools.impl.DeleteRoutineTool
+import com.jarvis.agent.tools.impl.ForgetTool
+import com.jarvis.agent.tools.impl.ListRoutinesTool
+import com.jarvis.agent.tools.impl.RecallTool
+import com.jarvis.agent.tools.impl.RememberTool
+import com.jarvis.agent.tools.impl.SaveNicknameTool
+import com.jarvis.agent.tools.impl.UpdateRoutineTool
 
 /** The single place where tools are registered. Add new tools here. */
 object ToolCatalog {
@@ -67,6 +75,9 @@ object ToolCatalog {
         // device
         SetVolumeTool(), SetBrightnessTool(), SetDndTool(), FlashlightTool(), OpenSettingsTool(),
         ClipboardReadTool(), ClipboardWriteTool(), GetLocationTool(),
+        // memory & routines
+        RememberTool(), RecallTool(), ForgetTool(), SaveNicknameTool(),
+        CreateRoutineTool(), ListRoutinesTool(), UpdateRoutineTool(), DeleteRoutineTool(),
         // web & files
         WebSearchTool(), ReadWebPageTool(), ListFilesTool(), ReadTextFileTool(), DeleteFileTool(),
     )
