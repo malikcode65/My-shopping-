@@ -51,6 +51,9 @@ fun SettingsScreen() {
     var tts by remember { mutableStateOf(prefs.ttsEngine) }
     var lang by remember { mutableStateOf(prefs.listenLanguage) }
     var effort by remember { mutableStateOf(prefs.effort) }
+    var maxSteps by remember { mutableStateOf(prefs.maxSteps.toString()) }
+    var rpm by remember { mutableStateOf(prefs.maxRequestsPerMinute.toString()) }
+    var taskTimeout by remember { mutableStateOf(prefs.taskTimeoutSec.toString()) }
 
     Column(
         Modifier
@@ -75,6 +78,13 @@ fun SettingsScreen() {
             listOf("low", "medium", "high").forEach { e ->
                 FilterChip(selected = effort == e, onClick = { effort = e }, label = { Text(e) })
             }
+        }
+
+        Section("Hadood (limits)")
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedTextField(maxSteps, { maxSteps = it.filter(Char::isDigit) }, label = { Text("Max steps (≤25)") }, modifier = Modifier.weight(1f), singleLine = true)
+            OutlinedTextField(rpm, { rpm = it.filter(Char::isDigit) }, label = { Text("Requests/min") }, modifier = Modifier.weight(1f), singleLine = true)
+            OutlinedTextField(taskTimeout, { taskTimeout = it.filter(Char::isDigit) }, label = { Text("Task timeout s") }, modifier = Modifier.weight(1f), singleLine = true)
         }
 
         Section("Awaaz")
@@ -108,6 +118,9 @@ fun SettingsScreen() {
                 prefs.apiBaseUrl = baseUrl
                 prefs.model = model
                 prefs.effort = effort
+                maxSteps.toIntOrNull()?.let { prefs.maxSteps = it }
+                rpm.toIntOrNull()?.let { prefs.maxRequestsPerMinute = it }
+                taskTimeout.toIntOrNull()?.let { prefs.taskTimeoutSec = it }
                 prefs.elevenLabsVoiceId = voiceId
                 prefs.wakeWordEnabled = wake
                 prefs.overlayEnabled = overlay

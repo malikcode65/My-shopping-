@@ -21,6 +21,8 @@ import com.jarvis.agent.voice.SpokenLanguage
 import com.jarvis.agent.voice.VoiceIO
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.JsonObject
@@ -52,7 +54,12 @@ class AgentLoop(
     private val rateLimiter: RateLimiter,
 ) : CommandHandler {
 
-    override suspend fun handle(text: String, origin: TaskOrigin): String {
+    /** One task at a time: two agents driving the same screen would fight each other. */
+    private val oneTaskAtATime = Mutex()
+
+    override suspend fun handle(text: String, origin: TaskOrigin): String = oneTaskAtATime.withLock { handleLocked(text, origin) }
+
+    private suspend fun handleLocked(text: String, origin: TaskOrigin): String {
         val taskId = System.currentTimeMillis()
         val language = LanguageDetector.detect(text)
         log.log(taskId, "TASK", text, detail = "origin=$origin")

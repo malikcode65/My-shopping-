@@ -1,6 +1,7 @@
 package com.jarvis.agent.tools.impl
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -132,6 +133,7 @@ class MakeCallTool : BaseTool(
         return RiskAssessment(RiskLevel.MEDIUM, "Call ${Contacts.describe(r)}")
     }
 
+    @SuppressLint("MissingPermission") // checked by Contacts.require
     override suspend fun execute(input: JsonObject, ctx: ToolContext): ToolResult {
         Contacts.require(ctx.app, Manifest.permission.CALL_PHONE)
         val r = Contacts.resolve(ctx.app, input.str("to").orEmpty())
@@ -151,11 +153,13 @@ class SendSmsTool : BaseTool(
 ) {
     override fun describe(input: JsonObject) = "SMS to ${input.str("to")}"
 
+
     override suspend fun assess(input: JsonObject, ctx: ToolContext): RiskAssessment {
         val r = Contacts.resolve(ctx.app, input.str("to").orEmpty())
         return RiskAssessment(RiskLevel.MEDIUM, "Send SMS to ${Contacts.describe(r)}", input.str("message").orEmpty())
     }
 
+    @SuppressLint("MissingPermission") // checked by Contacts.require
     override suspend fun execute(input: JsonObject, ctx: ToolContext): ToolResult {
         Contacts.require(ctx.app, Manifest.permission.SEND_SMS)
         val message = input.str("message").orEmpty()

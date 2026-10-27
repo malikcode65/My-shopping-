@@ -215,9 +215,9 @@ class JarvisAccessibilityService : AccessibilityService() {
         return performGlobalAction(code)
     }
 
-    /** Screenshot of the default display (Android 11+). Null if unsupported or the app blocks capture. */
+    /** Screenshot of the default display (Android 11+). Null if the app blocks capture. */
+    @RequiresApi(Build.VERSION_CODES.R)
     suspend fun capture(): Bitmap? {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return null
         return suspendCancellableCoroutine { cont ->
             takeScreenshot(Display.DEFAULT_DISPLAY, shotExecutor, object : TakeScreenshotCallback {
                 override fun onSuccess(result: ScreenshotResult) {

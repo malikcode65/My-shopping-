@@ -54,6 +54,16 @@ fun HomeScreen() {
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Text("Jarvis", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        val graph = com.jarvis.agent.JarvisApp.graph
+        val warnings = buildList {
+            if (graph.prefs.usesDirectApi && !graph.secure.has(com.jarvis.agent.core.SecureStore.Secret.ANTHROPIC_API_KEY)) {
+                add("Claude API key nahi hai — Settings mein daalein.")
+            }
+            if (!com.jarvis.agent.ui.setup.PermissionCatalog.isAccessibilityEnabled(context)) {
+                add("Accessibility band hai — Jarvis apps nahi chala sakta aur volume kill switch kaam nahi karega.")
+            }
+        }
+        warnings.forEach { Text("⚠ $it", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(14.dp)) {
                 Text("Status: ${phaseLabel(state.phase)}", fontWeight = FontWeight.SemiBold)

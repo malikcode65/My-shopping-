@@ -1,5 +1,6 @@
 package com.jarvis.agent.tools.impl
 
+import android.annotation.SuppressLint
 import android.app.KeyguardManager
 import android.app.NotificationManager
 import android.bluetooth.BluetoothManager
@@ -48,6 +49,8 @@ class DeviceStatusTool : BaseTool(
     RiskLevel.LOW, readOnly = true,
 ) {
     override fun describe(input: JsonObject) = "Check phone status"
+
+    @SuppressLint("MissingPermission") // Bluetooth state read is best-effort (runCatching)
     override suspend fun execute(input: JsonObject, ctx: ToolContext): ToolResult {
         val c = ctx.app
         val battery = c.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
