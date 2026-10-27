@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Jarvis</string>
+    <string name="notif_channel_service">Jarvis always-on</string>
+    <string name="notif_channel_alerts">Jarvis confirmations</string>
+    <string name="notif_listening">Sun raha hoon… \"Hey Jarvis\" kahein</string>
+    <string name="notif_stop">STOP (kill switch)</string>
+    <string name="notif_talk">Baat karein</string>
+</resources>
