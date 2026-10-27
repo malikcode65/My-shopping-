@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Jarvis</string>
+    <string name="notif_channel_service">Jarvis always-on</string>
+    <string name="notif_channel_alerts">Jarvis confirmations</string>
+    <string name="notif_listening">Sun raha hoon… \"Hey Jarvis\" kahein</string>
+    <string name="notif_stop">STOP (kill switch)</string>
+    <string name="notif_talk">Baat karein</string>
+    <string name="accessibility_label">Jarvis voice agent</string>
+    <string name="accessibility_description">Jarvis aap ki awaaz ke hukm par screen parhta hai aur tap, type, scroll karta hai taake kisi bhi app ko chala sake. Volume-down 3 dafa dabane se Jarvis foran ruk jaata hai. Paise, delete ya security wale kaam hamesha aap ki fingerprint tasdeeq ke baad hote hain. Jarvis password, PIN, OTP ya card number kabhi type nahi karta.</string>
+</resources>

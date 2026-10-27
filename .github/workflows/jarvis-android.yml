@@ -1,0 +1,42 @@
+name: Jarvis Android
+
+on:
+  push:
+    paths:
+      - "jarvis/**"
+      - ".github/workflows/jarvis-android.yml"
+  pull_request:
+    paths:
+      - "jarvis/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: jarvis
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Unit tests
+        run: ./gradlew --no-daemon testDebugUnitTest
+      - name: Lint (errors fail the build)
+        run: ./gradlew --no-daemon lintDebug
+      - name: Build debug APK
+        run: ./gradlew --no-daemon assembleDebug
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jarvis-reports
+          path: |
+            jarvis/app/build/reports/
+            jarvis/app/build/test-results/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jarvis-debug-apk
+          path: jarvis/app/build/outputs/apk/debug/*.apk
