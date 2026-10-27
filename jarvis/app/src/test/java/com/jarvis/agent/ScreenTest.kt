@@ -57,3 +57,12 @@ class ScreenTest {
         assertEquals(RiskLevel.HIGH, UiRiskClassifier.classifyTyping("com.android.settings", "Install unknown apps Chrome").level)
     }
 }
+
+class ImageCodecTest {
+    @Test
+    fun fitsLongSideWithoutUpscaling() {
+        assertEquals(1280 to 576, com.jarvis.agent.tools.impl.ImageCodec.fit(2400, 1080))
+        assertEquals(576 to 1280, com.jarvis.agent.tools.impl.ImageCodec.fit(1080, 2400))
+        assertEquals(800 to 600, com.jarvis.agent.tools.impl.ImageCodec.fit(800, 600))
+    }
+}

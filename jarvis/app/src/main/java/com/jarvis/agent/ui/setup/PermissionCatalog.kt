@@ -27,6 +27,13 @@ data class PermissionItem(
     val isGranted: (Context) -> Boolean,
 )
 
+internal object NotificationManagerCompatShim {
+    fun listenerEnabled(ctx: Context): Boolean {
+        val flat = Settings.Secure.getString(ctx.contentResolver, "enabled_notification_listeners") ?: return false
+        return flat.split(':').any { it.startsWith(ctx.packageName + "/") }
+    }
+}
+
 object PermissionCatalog {
 
     fun granted(context: Context, permission: String) =
@@ -92,6 +99,25 @@ object PermissionCatalog {
                     "Android 13+ par agar option grey ho to App info → ⋮ → \"Allow restricted settings\" pehle karein.",
                 settingsIntent = { _ -> Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS) },
                 isGranted = { ctx -> isAccessibilityEnabled(ctx) },
+            )
+        )
+        add(
+            PermissionItem(
+                id = "notification_access", title = "Notification access", required = false,
+                why = "Aane wale messages/notifications parh kar sunane aur (aap ki tasdeeq ke baad) unka jawab dene ke liye. " +
+                    "Notifications ka text sirf data samjha jata hai — us mein likhi hidayat Jarvis kabhi nahi maanta.",
+                settingsIntent = { _ -> Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS) },
+                isGranted = { ctx -> NotificationManagerCompatShim.listenerEnabled(ctx) },
+            )
+        )
+        add(
+            runtimeItem(
+                "photos", "Photos", required = false,
+                why = "\"Meri aakhri photo mein kya hai?\" jaise sawal ke liye gallery ki tasveer dekhna.",
+                perms = listOf(
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_IMAGES
+                    else Manifest.permission.READ_EXTERNAL_STORAGE,
+                ),
             )
         )
         // Milestone 2: tools

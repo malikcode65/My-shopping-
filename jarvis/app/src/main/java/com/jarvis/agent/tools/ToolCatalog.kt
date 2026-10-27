@@ -38,6 +38,14 @@ import com.jarvis.agent.tools.impl.SendEmailTool
 import com.jarvis.agent.tools.impl.SwipeTool
 import com.jarvis.agent.tools.impl.TapTool
 import com.jarvis.agent.tools.impl.TypeTextTool
+import com.jarvis.agent.tools.impl.DismissNotificationTool
+import com.jarvis.agent.tools.impl.OpenCameraTool
+import com.jarvis.agent.tools.impl.OpenNotificationTool
+import com.jarvis.agent.tools.impl.ReadNotificationsTool
+import com.jarvis.agent.tools.impl.RecentPhotosTool
+import com.jarvis.agent.tools.impl.ReplyNotificationTool
+import com.jarvis.agent.tools.impl.ScreenshotTool
+import com.jarvis.agent.tools.impl.ViewPhotoTool
 
 /** The single place where tools are registered. Add new tools here. */
 object ToolCatalog {
@@ -45,7 +53,11 @@ object ToolCatalog {
         // conversation & control
         AskUserTool(), HandOffTool(), WaitTool(), GetTimeTool(), DeviceStatusTool(),
         // screen control (any app)
-        ReadScreenTool(), TapTool(), LongPressTool(), TypeTextTool(), ScrollTool(), SwipeTool(), PressKeyTool(),
+        ReadScreenTool(), ScreenshotTool(), TapTool(), LongPressTool(), TypeTextTool(), ScrollTool(), SwipeTool(), PressKeyTool(),
+        // notifications
+        ReadNotificationsTool(), ReplyNotificationTool(), OpenNotificationTool(), DismissNotificationTool(),
+        // photos & camera
+        RecentPhotosTool(), ViewPhotoTool(), OpenCameraTool(),
         // apps & links
         ListAppsTool(), LaunchAppTool(), OpenUrlTool(),
         // communication
