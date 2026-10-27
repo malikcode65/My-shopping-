@@ -30,16 +30,26 @@ import com.jarvis.agent.tools.impl.SetTimerTool
 import com.jarvis.agent.tools.impl.SetVolumeTool
 import com.jarvis.agent.tools.impl.WaitTool
 import com.jarvis.agent.tools.impl.WebSearchTool
+import com.jarvis.agent.tools.impl.LongPressTool
+import com.jarvis.agent.tools.impl.PressKeyTool
+import com.jarvis.agent.tools.impl.ReadScreenTool
+import com.jarvis.agent.tools.impl.ScrollTool
+import com.jarvis.agent.tools.impl.SendEmailTool
+import com.jarvis.agent.tools.impl.SwipeTool
+import com.jarvis.agent.tools.impl.TapTool
+import com.jarvis.agent.tools.impl.TypeTextTool
 
 /** The single place where tools are registered. Add new tools here. */
 object ToolCatalog {
     fun build(): ToolRegistry = ToolRegistry().register(
         // conversation & control
         AskUserTool(), HandOffTool(), WaitTool(), GetTimeTool(), DeviceStatusTool(),
+        // screen control (any app)
+        ReadScreenTool(), TapTool(), LongPressTool(), TypeTextTool(), ScrollTool(), SwipeTool(), PressKeyTool(),
         // apps & links
         ListAppsTool(), LaunchAppTool(), OpenUrlTool(),
         // communication
-        SearchContactsTool(), MakeCallTool(), SendSmsTool(), ReadSmsTool(),
+        SearchContactsTool(), MakeCallTool(), SendSmsTool(), ReadSmsTool(), SendEmailTool(),
         // time
         SetAlarmTool(), SetTimerTool(), ReadCalendarTool(), AddCalendarEventTool(), DeleteCalendarEventTool(),
         // device

@@ -39,6 +39,11 @@ object PermissionCatalog {
         isGranted = { ctx -> perms.all { granted(ctx, it) } },
     )
 
+    fun isAccessibilityEnabled(ctx: Context): Boolean {
+        val enabled = Settings.Secure.getString(ctx.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES) ?: return false
+        return enabled.split(':').any { it.startsWith(ctx.packageName + "/") }
+    }
+
     fun items(): List<PermissionItem> = buildList {
         add(
             runtimeItem(
@@ -77,6 +82,16 @@ object PermissionCatalog {
                 isGranted = { ctx ->
                     ctx.getSystemService(PowerManager::class.java)?.isIgnoringBatteryOptimizations(ctx.packageName) == true
                 },
+            )
+        )
+        add(
+            PermissionItem(
+                id = "accessibility", title = "Accessibility (screen control)", required = true,
+                why = "Yeh Jarvis ki asal taaqat hai: screen parh kar kisi bhi app mein tap/type/scroll karna, aur " +
+                    "volume-down 3 dafa wala kill switch. Settings → Accessibility → Installed apps → \"Jarvis voice agent\" on karein. " +
+                    "Android 13+ par agar option grey ho to App info → ⋮ → \"Allow restricted settings\" pehle karein.",
+                settingsIntent = { _ -> Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS) },
+                isGranted = { ctx -> isAccessibilityEnabled(ctx) },
             )
         )
         // Milestone 2: tools

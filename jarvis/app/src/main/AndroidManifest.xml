@@ -103,6 +103,20 @@
             android:name=".service.KillSwitchReceiver"
             android:exported="false" />
 
+        <!-- Milestone 3: operate any app -->
+        <service
+            android:name=".accessibility.JarvisAccessibilityService"
+            android:exported="false"
+            android:label="@string/accessibility_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
         <receiver
             android:name=".safety.ContinueReceiver"
             android:exported="false" />
